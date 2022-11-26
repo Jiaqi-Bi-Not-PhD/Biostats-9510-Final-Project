@@ -1,0 +1,16 @@
+---
+title: "Biostats 9510 Final Project Code and Draft"
+output: pdf_document
+date: "2022-11-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The final project is titled as \textit{Comparison of Different Homogeneity Tests: Contrast Test, Cochran’s Test, and Zelen’s Test on a Multivariate Stratum Based on the Simulation Study}. 
+
+When the stratified-specific contingency table occurred, the test of association such as chi-square test (Cochran's test), Mantel-Haenszel test, or an exact test can be applied but they increased the Type I error for the set of tests since multiple tests occurred in this phase.(Page 121 textbook)
+
+
+
