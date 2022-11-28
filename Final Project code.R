@@ -1,4 +1,3 @@
-library("Logistic")
 library(DescTools)
 cont.table <- function(x1, x2) {
   ak <- length(which(x1==1))
@@ -33,7 +32,7 @@ x.beta <- beta*x
 
 ## K1, small N
 set.seed(111)
-error <- rnorm(n1, 0, 0.3)
+error <- rnorm(n1, 0, 0.9)
 p1 <- 1/(1+exp(-(alpha + x.beta + error)))
 p2 <- 1/(1+exp(-(alpha + error)))
 y1 <- rbinom(n = n1, size = 1, prob = p1) 
@@ -42,7 +41,7 @@ table1 <- cont.table(y1, y2)
 
 ## K2, small N
 set.seed(222)
-error <- rnorm(n1, 0, 0.3)
+error <- rnorm(n1, 0, 0.9)
 p1 <- 1/(1+exp(-(alpha + x.beta + error)))
 p2 <- 1/(1+exp(-(alpha + error)))
 y1 <- rbinom(n = n1, size = 1, prob = p1)
@@ -51,7 +50,7 @@ table2 <- cont.table(y1, y2)
 
 ## K3, small N
 set.seed(333)
-error <- rnorm(n1, 0, 0.3)
+error <- rnorm(n1, 0, 0.9)
 p1 <- 1/(1+exp(-(alpha + x.beta + error)))
 p2 <- 1/(1+exp(-(alpha + error)))
 y1 <- rbinom(n = n1, size = 1, prob = p1)
@@ -81,6 +80,12 @@ df <- array(
 )
 breslow.chisq <- BreslowDayTest(df, OR = MH.OR)
 breslow.chisq
+
+
+
+
+
+
 
 
 
@@ -134,18 +139,5 @@ mean(contrast.results)
 
 
 
-
-
-
-# treatment <- sample(c(0, 1), size = 70, replace = TRUE)
-# xbeta <- 3*treatment
-# p <- 1/(1+exp(-xbeta))
-# y <- rbinom(n = 70, size = 1, prob = p)
-# model1 <- glm(y ~ treatment, family = "binomial")
-# summary(model1)
-
-# error <- rnorm(70, 0, 0.25)
-# model2 <- glm(y ~ treatment + error, family = "binomial")
-# summary(model2)
 
 
