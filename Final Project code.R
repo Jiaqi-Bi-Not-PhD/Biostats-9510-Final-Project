@@ -25,9 +25,9 @@ K = 3
 alpha = -0.5
 beta = 2.5
 N = 70
-n1 = 35
-n2 = 35
-x <- rep(1, 35)
+n1 = 105
+n2 = 105
+x <- rep(1, 105)
 x.beta <- beta*x
 
 ## K1, small N
