@@ -24,17 +24,10 @@ cont.table <- function(x1, x2) {
 K = 3
 alpha = -0.5
 beta = 2.5
-<<<<<<< HEAD
-N = 70
-n1 = 35
-n2 = 35
-x <- rep(1, 35)
-=======
 N = 210
 n1 = 105
 n2 = 105
 x <- rep(1, 105)
->>>>>>> cfe17ba03a3a3bea1a506c2f7ae7b79e38971720
 x.beta <- beta*x
 
 ## K1, small N
