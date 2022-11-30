@@ -14,7 +14,7 @@ cont.table <- function(x1, x2) {
     dk=dk,
     log.or=log(OR),
     sigma.k.sq=sigma.k.sq,
-    tau.k=sigma.k.sq^(-2)
+    tau.k=sigma.k.sq^(-1)
   ))
 }
 
@@ -24,10 +24,17 @@ cont.table <- function(x1, x2) {
 K = 3
 alpha = -0.5
 beta = 2.5
+<<<<<<< HEAD
 N = 70
 n1 = 35
 n2 = 35
 x <- rep(1, 35)
+=======
+N = 210
+n1 = 105
+n2 = 105
+x <- rep(1, 105)
+>>>>>>> cfe17ba03a3a3bea1a506c2f7ae7b79e38971720
 x.beta <- beta*x
 
 ## K1, small N
@@ -103,22 +110,25 @@ n1 = 35
 n2 = 35
 x <- rep(1, 35)
 x.beta <- beta*x
-set.seed(123)
-error <- rnorm(n1, 0, 0)
+s = 0.9
+
 
 contrast.results <- foreach (i = 1:100, 
          .combine = 'c') %dopar% {
   #p <- 1/(1+exp(-x.beta))
+  error <- rnorm(n1, 0, s)
   y1 <- rbinom(n = n1, size = 1, prob = plogis(alpha + x.beta + error)) 
   y2 <- rbinom(n = n2, size = 1, prob = plogis(alpha + error))
   table1 <- cont.table(y1, y2)
   
   ## K2, small N, 0 var random
+  error <- rnorm(n1, 0, s)
   y1 <- rbinom(n = n1, size = 1, prob = plogis(alpha + x.beta + error)) 
   y2 <- rbinom(n = n2, size = 1, prob = plogis(alpha + error)) 
   table2 <- cont.table(y1, y2)
   
   ## K3, small N, 0 var random
+  error <- rnorm(n1, 0, s)
   y1 <- rbinom(n = n1, size = 1, prob = plogis(alpha + x.beta + error)) 
   y2 <- rbinom(n = n2, size = 1, prob = plogis(alpha + error)) 
   table3 <- cont.table(y1, y2)
@@ -129,10 +139,10 @@ contrast.results <- foreach (i = 1:100,
   C.T <- matrix(c(1, 0, -1, 1, 0, -1), nrow = 2, ncol = 3)
   contrast.chisq <- t(C.T %*% theta) %*% solve(C.T %*% Sigma %*% t(C.T)) %*% C.T %*% theta
   contrast.chisq <- as.numeric(contrast.chisq)
+  contrast.chisq <- pchisq(contrast.chisq, df = 2, lower.tail = FALSE)
 }
 
 mean(contrast.results)
-
 
 
 
