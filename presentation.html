@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Comparison of Different Homogeneity Tests via Simulation Study</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jiaqi Bi" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Comparison of Different Homogeneity Tests via Simulation Study
+]
+.subtitle[
+## Contrast Test, Cochran’s Test, and Breslow Test
+]
+.author[
+### Jiaqi Bi
+]
+.institute[
+### Department of Epidemiology and Biostatistics, Western University
+]
+.date[
+### (updated: 2022-12-05)
+]
+
+---
+
+
+
+
+class: center, middle
+
+# Homogeneity Test
+
+### Introduction
+
+---
+class: inverse, center, middle
+
+# Why do we need Homogeneity Test?
+
+---
+
+# Hypothesis Testing
+
+Through the hypothesis, we know we are testing the measures of association `\(\{\theta_k\}\)` on some scale `\(\theta_k=G(\pi_{1k},\pi_{2k})\)` such that the null hypothesis is
+
+$$
+H_0:\theta_1=\theta_2=...=\theta_K
+$$
+
+--
+
+and the alternative is
+
+$$
+\exists \theta_l\neq\theta_k\ s.t.\ 1\leq k&lt;l\leq K
+$$
+
+--
+
+Note that in this case, the alternative hypothesis is just a negation of the null hypothesis.  
+
+--
+
+In simple word, we are testing a measure **equivalence** through exposure and disease at each level. 
+
+---
+
+class: center, middle
+
+# Homogeneity Test
+
+### Methods
+
+---
+
+class: inverse, center, middle
+
+# How to conduct Homogeneity Test using R? 
+
+# How many methods are there?
+
+---
+
+class: inverse, center, middle
+
+# How to conduct Homogeneity Test using R?
+
+# ~~How many methods are there?~~
+
+---
+
+## Method 1: Contrast Test
+The test statistic: 
+
+$$
+X^2=\Big(\mathbf{C'}\boldsymbol{\hat{\theta}}\Big)'\Big(\mathbf{C'}\boldsymbol{\hat{\Sigma}_{\boldsymbol{\hat{\theta}}}}\mathbf{C}\Big)^{-1}\mathbf{C'}\boldsymbol{\hat{\theta}} 
+$$
+
+--
+
+**WARNING**: This does not equal to 
+
+$$
+X^2=\mathbf{C'}\boldsymbol{\hat{\theta}} \Big(\mathbf{C'}\boldsymbol{\hat{\Sigma}_{\boldsymbol{\hat{\theta}}}}\mathbf{C}\Big)^{-1}\Big(\mathbf{C'}\boldsymbol{\hat{\theta}}\Big)'
+$$
+
+---
+
+## Method 1: Contrast Test
+The test statistic: 
+
+$$
+X^2=\Big(\mathbf{C'}\boldsymbol{\hat{\theta}}\Big)'\Big(\mathbf{C'}\boldsymbol{\hat{\Sigma}_{\boldsymbol{\hat{\theta}}}}\mathbf{C}\Big)^{-1}\mathbf{C'}\boldsymbol{\hat{\theta}} 
+$$
+`\(\mathbf{C}\)` is the `\(K\times(K-1)\)` contrast matrix that it has two equivalent versions:
+
+$$
+\mathbf{C'}=
+`\begin{pmatrix}
+1 &amp; -1 &amp; 0 &amp; \dots &amp; 0 &amp; 0\\
+0 &amp; 1 &amp; -1 &amp; \dots &amp; 0 &amp; 0\\
+\vdots &amp; \vdots &amp;\vdots &amp; \vdots &amp; \vdots &amp; \vdots\\
+0 &amp; 0 &amp; 0 &amp; \dots &amp; 1 &amp; -1
+\end{pmatrix}`
+$$
+and
+$$
+\mathbf{C'}=\frac{1}{K}
+`\begin{pmatrix}
+K-1 &amp; -1 &amp; \dots &amp; -1 &amp; -1\\
+-1 &amp; K-1 &amp; \dots &amp; -1 &amp; -1 \\
+\vdots &amp; \vdots &amp;\vdots &amp; \vdots &amp; \vdots \\
+-1 &amp; -1 &amp; \dots &amp; K-1 &amp; -1 
+\end{pmatrix}`
+$$
+---
+
+## Method 1: Contrast Test
+The test statistic: 
+
+$$
+X^2=\Big(\mathbf{C'}\boldsymbol{\hat{\theta}}\Big)'\Big(\mathbf{C'}\boldsymbol{\hat{\Sigma}_{\boldsymbol{\hat{\theta}}}}\mathbf{C}\Big)^{-1}\mathbf{C'}\boldsymbol{\hat{\theta}} 
+$$
+
+The parameter matrix `\(\boldsymbol{\hat{\theta}}\stackrel{d}{\approx}N(\boldsymbol{\theta},\boldsymbol{\Sigma}_{\boldsymbol{\hat{\theta}}})\)`, 
+`$$\boldsymbol{\theta}=(\theta_1...\theta_K)^\top$$`
+
+--
+
+and the covariance matrix `\(\boldsymbol{\Sigma}_{\boldsymbol{\hat{\theta}}}=V(\boldsymbol{\hat{\theta}})\)` is defined as
+`$$\boldsymbol{\Sigma}_{\boldsymbol{\hat{\theta}}}=diag(\sigma_{\hat{\theta}_1}^2...\sigma_{\hat{\theta}_K}^2)$$`
+---
+
+## Method 1: Contrast Test
+The test statistic: 
+
+$$
+X^2=\Big(\mathbf{C'}\boldsymbol{\hat{\theta}}\Big)'\Big(\mathbf{C'}\boldsymbol{\hat{\Sigma}_{\boldsymbol{\hat{\theta}}}}\mathbf{C}\Big)^{-1}\mathbf{C'}\boldsymbol{\hat{\theta}} 
+$$
+is asymptotically distributed as `\(\chi^2\)` with degree of freedom `\(K-1\)`.
+
+--
+
+Example of `\(K=3\)`: 
+
+```r
+theta &lt;- matrix(c(table1$log.or, table2$log.or, 
+                  table3$log.or), nrow = 3, ncol = 1)
+Sigma &lt;- diag(c(table1$sigma.k.sq, table2$sigma.k.sq, 
+                table3$sigma.k.sq))
+C.T &lt;- matrix(c(1, 0, -1, 1, 0, -1), nrow = 2, ncol = 3)
+contrast.chisq &lt;- t(C.T %*% theta) %*% 
+  solve(C.T %*% Sigma %*% t(C.T)) %*% C.T %*% theta
+contrast.chisq
+pchisq(contrast.chisq, df = 2, lower.tail = FALSE)
+```
+
+---
+
+## Method 2: Cochran's Test
+On stratum `\(k\)`, we have
+`$$\hat{\theta}_k-\theta\stackrel{d}{\approx}N(0, \sigma_{\hat{\theta}_k}^2)$$`
+and
+`$$\tau_k=\sigma_{\hat{\theta}_k}^{-2}$$`
+Then
+`$$X^2=\sum_k\hat{\tau}_k(\hat{\theta}_k-\hat{\theta})^2$$`
+that is asymptotically distributed as `\(\chi^2\)` with degree of fredom `\(K-1\)`.
+
+---
+
+## Method 2: Cochran's Test
+
+The Cochran's Test Statistic:
+`$$X^2=\sum_k\hat{\tau}_k(\hat{\theta}_k-\hat{\theta})^2$$`
+
+--
+
+Example Code on `\(K=3\)`: 
+```r
+tau.k &lt;- sigma.k.sq^(-1)
+theta.C &lt;- (table1$tau.k*table1$log.or+
+              table2$tau.k*table2$log.or+
+              table3$tau.k*table3$log.or)/(table1$tau.k+table2$tau.k+table3$tau.k)
+cochran.chisq &lt;- table1$tau.k*((table1$log.or - theta.C)^2) + 
+  table2$tau.k*((table2$log.or - theta.C)^2) + 
+  table3$tau.k*((table3$log.or - theta.C)^2)
+cochran.chisq
+pchisq(cochran.chisq, df = 2, lower.tail = FALSE)
+```
+
+---
+
+## Method 3: Breslow Test
+MH estimates based homogeneity test where the common odds ratio is calculated through
+`$$\widehat{OR}_{MH}=\frac{\sum_ka_kd_k/N_k}{\sum_kb_kc_k/N_k}$$`
+Each expected element of `\(2\times 2\)` table is estimated from `\(OR_{MH}\)`, e.g.
+`$$\hat{E}(a_k|\widehat{OR}_{MH})=\tilde{a}_k~ s.t.~ OR_k=\widehat{OR}_{MH}$$`
+--
+
+Then the test statistic is
+`$$X^2=\sum_{k}\frac{a_k-\tilde{a}_k)^2}{\hat{V}(a_k|\widehat{OR}_{MH})}$$`
+where
+`$$\hat{V}(a_k|\widehat{OR}_{MH})=\Big[\frac{1}{\tilde{a}_k}+\frac{1}{\tilde{b}_k}+\frac{1}{\tilde{c}_k}+\frac{1}{\tilde{d}_k}\Big]^{-1}$$`
+
+---
+
+## Method 3: Breslow Test
+MH estimates based homogeneity test where the common odds ratio is calculated through
+`$$\widehat{OR}_{MH}=\frac{\sum_ka_kd_k/N_k}{\sum_kb_kc_k/N_k}$$`
+
+Each expected element of `\(2\times 2\)` table is estimated from `\(OR_{MH}\)`, e.g.
+`$$\hat{E}(a_k|\widehat{OR}_{MH})=\tilde{a}_k~ s.t.~ OR_k=\widehat{OR}_{MH}$$`
+
+Or equivalently:
+`$$X^2=\sum_{k=1}^K\Big[\frac{(a_k-\tilde{a}_k)^2}{\tilde{a}_k}+\frac{(b_k-\tilde{b}_k)^2}{\tilde{b}_k}+\frac{(c_k-\tilde{c}_k)^2}{\tilde{c}_k}+\frac{(d_k-\tilde{d}_k)^2}{\tilde{d}_k}\Big]$$`
+
+--
+
+It also follows `\(\chi^2_{K-1}\)`. 
+
+---
+
+## Method 3: Breslow Test
+
+The test statistic
+
+`$$X^2=\sum_{k=1}^K\Big[\frac{(a_k-\tilde{a}_k)^2}{\tilde{a}_k}+\frac{(b_k-\tilde{b}_k)^2}{\tilde{b}_k}+\frac{(c_k-\tilde{c}_k)^2}{\tilde{c}_k}+\frac{(d_k-\tilde{d}_k)^2}{\tilde{d}_k}\Big]$$`
+
+Luckily, we have a Breslow Test R package to conduct above computation:
+
+```r
+library(DescTools)
+MH.OR = ((table1$ak * table1$dk)/N + (table2$ak * table2$dk)/N + 
+           (table3$ak * table3$dk)/N)/((table1$bk * table1$ck)/N + 
+              (table2$bk * table2$ck)/N + (table3$bk * table3$ck)/N)
+df &lt;- array(
+  c(table1$ak, table1$bk, table1$ck, table1$dk, 
+    table2$ak, table2$bk, table2$ck, table2$dk, 
+    table3$ak, table3$bk, table3$ck, table3$dk), 
+  dim=c(2,2,3)
+)
+breslow.chisq &lt;- BreslowDayTest(df, OR = MH.OR)
+```
+
+---
+
+class: center, middle
+
+# Homogeneity Test
+
+### Simulation
+
+---
+
+## Log Odds Ratio
+
+The log odds ratio with random effects:
+`$$\hat{\theta}_k=\theta_k+\epsilon_k$$`
+such that regularly,
+`$$\pi_i(x_i,\theta)=P(y_i=1|x_i,\theta)=\frac{\exp(\alpha+x_i\beta)}{1+\exp(\alpha+x_i\beta)}$$`
+
+--
+
+When random effects exist: 
+`$$\pi_i(x_i,\theta)=P(y_i=1|x_i,\theta)=\frac{\exp(\alpha+x_i\beta+\epsilon)}{1+\exp(\alpha+x_i\beta+\epsilon)}$$`
+and
+`$$\epsilon\sim N(0,\sigma^2_{\epsilon})$$`
+
+---
+
+## Simulation
+
+We take `\(x_i\)` as an indicator variable to represent exposure and unexposure, we take different `\(\sigma^2_{\epsilon}=\{0,0.1,...,0.9\}\)` to generate normal distributed random effects, and fixed `\(\alpha=-0.5\)` and `\(\beta=2.5\)`. Compare the homogeneity test results of `\(N_k=\{70, 140, 210\}\)`. 
+
+
+Example of `\(K=3\)` and `\(N_k=70\)`: 
+
+```r
+K = 3
+alpha = -0.5
+beta = 2.5
+N = 70
+n1 = 35
+n2 = 35
+x &lt;- rep(1, 35)
+x.beta &lt;- beta*x
+```
+
+---
+
+## Simulation
+
+We take `\(x_i\)` as an indicator variable to represent exposure and unexposure, we take different `\(\sigma^2_{\epsilon}=\{0,0.1,...,0.9\}\)` to generate normal distributed random effects, and fixed `\(\alpha=-0.5\)` and `\(\beta=2.5\)`. Compare the homogeneity test results of total `\(N=\{210, 420, 630\}\)` under different scenarios. 
+
+Example of `\(K=3\)` and `\(N_k=70\)` (Scenario 1): 
+
+```r
+## K1, small N
+set.seed(111)
+error &lt;- rnorm(n1, 0, 0.9)
+p1 &lt;- 1/(1+exp(-(alpha + x.beta + error)))
+p2 &lt;- 1/(1+exp(-(alpha + error)))
+y1 &lt;- rbinom(n = n1, size = 1, prob = p1) 
+y2 &lt;- rbinom(n = n2, size = 1, prob = p2)
+table1 &lt;- cont.table(y1, y2)
+```
+
+---
+
+## Simulation
+
+The contingency table can be generated through self-defined function `cont.table(x1, x2)`:
+
+```r
+cont.table &lt;- function(x1, x2) {
+  ak &lt;- length(which(x1==1))
+  bk &lt;- length(which(x2==1))
+  ck &lt;- length(which(x1==0))
+  dk &lt;- length(which(x2==0))
+  sigma.k.sq &lt;- 1/ak + 1/bk + 1/ck + 1/dk
+  OR &lt;- (ak*dk)/(bk*ck)
+  
+  return(list(
+    ak=ak,
+    bk=bk,
+    ck=ck,
+    dk=dk,
+    log.or=log(OR),
+    sigma.k.sq=sigma.k.sq,
+    tau.k=sigma.k.sq^(-1)
+  ))
+}
+```
+
+---
+
+## Simulation
+
+Different scenarios:
+
+- Equal sized: `\(n_{1k}=n_{2k}\)` for all `\(k\)`
+
+- Unequal sized: e.g. `\(N_k=70\)`, but exposure arm `\(n_{1k}=50\)`, unexposure `\(n_{2k}=20\)`
+
+- Special case: e.g. `\(n_{11}=n_{21}=n_{12}=n_{22}=20\)`, but third strata `\(n_{13}=n_{23}=65\)`
+
+---
+
+## Example Results
+
+Results cannot fit in this slide, click [here](https://github.com/Jiaqi-Bi-Not-PhD/Biostats-9510-Final-Project/blob/main/results%20presentation.jpeg)
+
+--
+
+### Interesting findings
+
+--
+
+- Contrast Test is algebraically equivalent to Cochran's Test
+
+--
+
+- Larger sample size typically yields higher type I error rate within the same random effects
+
+--
+
+- The higher random effects increase the homogeneity rejection rate (Yea we all know that)
+
+--
+
+- Results on which homogeneity test is better are not done yet, will be concluded within the final paper
+
+---
+
+class: inverse, center, middle
+
+# Questions? (Better not) 
+
+# Suggestions?
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
