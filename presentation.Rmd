@@ -364,6 +364,31 @@ Results cannot fit in this slide, click [here](https://github.com/Jiaqi-Bi-Not-P
 
 --
 
+```{r, include=FALSE, echo=FALSE}
+library(latex2exp)
+se <- seq(0, 0.9, 0.1)
+#SMALL
+C.s <- c(0.161, 0.330, 0.369, 0.733, 0.319, 0.624, 0.590, 0.807, 0.902, 0.939)
+CT.s <- c(0.161, 0.330, 0.369, 0.733, 0.319, 0.624, 0.590, 0.807, 0.902, 0.939)
+BT.s <- c(0.152, 0.313, 0.383, 0.731, 0.311, 0.622, 0.588, 0.807, 0.902, 0.939)
+```
+
+\centering
+```{r, echo=FALSE}
+par(mfrow=c(2,1))
+matplot(se, C.s, type = "p", pch=c(1,2,3), xlab = TeX("$\\sigma^2_{\\epsilon}$"), 
+        ylab = TeX("Probability of Rejecting $H_0$"),
+        main= TeX("Contrast Test, $N_k=70$"))
+abline(lm(C.s~se))
+matplot(se, BT.s, type = "p", pch=c(1,2,3), xlab = TeX("$\\sigma^2_{\\epsilon}$"), 
+        ylab = TeX("Probability of Rejecting $H_0$"),
+        main= TeX("Breslow Test, $N_k=70$"))
+abline(lm(BT.s~se))
+```
+
+
+--
+
 ### Interesting findings
 
 --
