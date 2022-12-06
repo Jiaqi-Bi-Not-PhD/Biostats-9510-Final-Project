@@ -224,7 +224,7 @@ Each expected element of `\(2\times 2\)` table is estimated from `\(OR_{MH}\)`, 
 --
 
 Then the test statistic is
-`$$X^2=\sum_{k}\frac{a_k-\tilde{a}_k)^2}{\hat{V}(a_k|\widehat{OR}_{MH})}$$`
+`$$X^2=\sum_{k}\frac{(a_k-\tilde{a}_k)^2}{\hat{V}(a_k|\widehat{OR}_{MH})}$$`
 where
 `$$\hat{V}(a_k|\widehat{OR}_{MH})=\Big[\frac{1}{\tilde{a}_k}+\frac{1}{\tilde{b}_k}+\frac{1}{\tilde{c}_k}+\frac{1}{\tilde{d}_k}\Big]^{-1}$$`
 
@@ -296,7 +296,7 @@ and
 
 ## Simulation
 
-We take `\(x_i\)` as an indicator variable to represent exposure and unexposure, we take different `\(\sigma^2_{\epsilon}=\{0,0.1,...,0.9\}\)` to generate normal distributed random effects, and fixed `\(\alpha=-0.5\)` and `\(\beta=2.5\)`. Compare the homogeneity test results of `\(N_k=\{70, 140, 210\}\)`. 
+We take `\(x_i\)` as an indicator variable to represent exposure and unexposure, we take different `\(\sigma^2_{\epsilon}=\{0,0.1,...,0.9\}\)` to generate normal distributed random effects, and fixed `\(\alpha=-0.5\)` and `\(\beta=2.5\)`. Compare the homogeneity test results of total `\(N=\{210, 420, 630\}\)` under different scenarios. 
 
 
 Example of `\(K=3\)` and `\(N_k=70\)`: 
